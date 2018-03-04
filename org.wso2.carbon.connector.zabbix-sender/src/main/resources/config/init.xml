@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template name="init" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="server"/>
+    <parameter name="port"/>
+    <sequence>
+        <property expression="$func:server" name="server" scope="default" type="STRING"/>
+        <property expression="$func:port" name="port" scope="default" type="STRING"/>
+        <class name="org.wso2.carbon.connector.zabbix_sender.security.Init"/>
+    </sequence>
+</template>

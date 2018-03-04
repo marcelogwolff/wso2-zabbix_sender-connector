@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template name="send" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="host"/>
+    <parameter name="item"/>
+    <parameter name="value"/>
+    <sequence>
+        <property expression="$func:host" name="host" scope="default" type="STRING"/>
+        <property expression="$func:item" name="item" scope="default" type="STRING"/>
+        <property expression="$func:value" name="value" scope="default" type="STRING"/>
+        <class name="org.wso2.carbon.connector.zabbix_sender.Send"/>
+    </sequence>
+</template>
