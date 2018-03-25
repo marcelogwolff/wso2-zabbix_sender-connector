@@ -18,5 +18,28 @@ public class ZabbixConstants {
 	public static final String HOST = "host";
 	public static final String ITEM = "item";
 	public static final String VALUE = "value";
+	
+	public static final String ERROR = "error";
+    public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String ERROR_CODE = "errorCode";
+
+    public static final String CONNECTOR_NAME = "zabbix-sender";
+    public static final String NAMESPACE = "ns";
+    
+    public static final String CONNECTOR_NAMESPACE = "http://org.wso2.esbconnectors.zabbix-sender";
+    public static final String RESULT = "result";
+    public static final String RESPONSE = "response";
+    public static final String INFO = "info";
+    public static final String PROCESSED = "processed";
+    public static final String FAILED = "failed";
+    public static final String TOTAL = "total";
+    public static final String SECONDSSPENT = "secondsspent";
+    public static final String SECONDS_SPENT = "secondsSpent";
+
+
+
+
+    public static final int ERROR_SEND = 100001;
+
 
 }

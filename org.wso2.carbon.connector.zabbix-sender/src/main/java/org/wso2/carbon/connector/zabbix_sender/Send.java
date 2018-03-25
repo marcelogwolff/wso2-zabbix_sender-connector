@@ -5,10 +5,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
+
+
 
 /**
  * Class to send data to Zabbix
@@ -22,16 +30,92 @@ import org.wso2.carbon.connector.core.ConnectException;
  *
  */
 public class Send extends AbstractConnector{
+	
+	public static void main (String[] args){
+		//{"response":"success","info":
+			//"processed: 1; failed: 0; total: 1; seconds spent: 0.000093"
+		//}
+
+		String jsonString = "{\"response\":\"success\",\"info\":\"processed: 1; failed: 0; total: 1; seconds spent: 0.000093\"}";
+		String[] split = jsonString.replace("{", "").replace("}", "").replace(" ", "").split(",");
+		String[] zabbixResponse = split[0].split(":");
+		System.out.println(zabbixResponse[1]);
+		
+		
+		List<String> list = Arrays.asList(split[1].replace("\"info\":","").split(";"));
+		for(String element : list){
+			String[] elementArray = element.split(":");
+
+			switch(elementArray[0].replace("\"","")){
+				case ZabbixConstants.PROCESSED:
+					System.out.println(elementArray[1]);
+					break;
+				case ZabbixConstants.FAILED:
+					System.out.println(elementArray[1]);
+					break;
+				case ZabbixConstants.TOTAL:
+					System.out.println(elementArray[1]);
+					break;
+				case ZabbixConstants.SECONDSSPENT:
+					System.out.println(elementArray[1]);
+					break;
+			}
+		}
+	}
 
 	@Override
 	public void connect(MessageContext messageContext) throws ConnectException {
 		try {
+			OMFactory factory = OMAbstractFactory.getOMFactory();
+			OMNamespace ns = factory.createOMNamespace(ZabbixConstants.CONNECTOR_NAMESPACE, ZabbixConstants.NAMESPACE);
+			OMElement result = factory.createOMElement(ZabbixConstants.RESULT, ns);
+			OMElement response = factory.createOMElement(ZabbixConstants.RESPONSE, ns);
+			OMElement info = factory.createOMElement(ZabbixConstants.INFO, ns);
+			OMElement processed = factory.createOMElement(ZabbixConstants.PROCESSED, ns);
+			OMElement failed = factory.createOMElement(ZabbixConstants.FAILED, ns);
+			OMElement total = factory.createOMElement(ZabbixConstants.TOTAL, ns);
+			OMElement secondsSpent = factory.createOMElement(ZabbixConstants.SECONDS_SPENT, ns);
+
 			String server = (String) messageContext.getProperty(ZabbixConstants.SERVER);
 			Integer port = Integer.valueOf((String) messageContext.getProperty(ZabbixConstants.PORT));
 			String host = (String) messageContext.getProperty(ZabbixConstants.HOST);
 			String item = (String) messageContext.getProperty(ZabbixConstants.ITEM);
 			String value = (String) messageContext.getProperty(ZabbixConstants.VALUE);
-			send(server, port, host, item, value);
+			String jsonString = send(server, port, host, item, value);
+			
+			//It was make this way to didn't use external library.
+			String[] split = jsonString.replace("{", "").replace("}", "").replace(" ", "").split(",");
+			String[] zabbixResponse = split[0].split(":");
+			response.setText(zabbixResponse[1].replace("\"",""));
+			
+			List<String> list = Arrays.asList(split[1].replace("\"info\":","").split(";"));
+			for(String element : list){
+				String[] elementArray = element.split(":");
+
+				switch(elementArray[0].replace("\"","")){
+					case ZabbixConstants.PROCESSED:
+						processed.setText(elementArray[1]);
+						break;
+					case ZabbixConstants.FAILED:
+						failed.setText(elementArray[1]);
+						break;
+					case ZabbixConstants.TOTAL:
+						total.setText(elementArray[1]);
+						break;
+					case ZabbixConstants.SECONDSSPENT:
+						secondsSpent.setText(elementArray[1].replace("\"",""));
+						break;
+				}
+			}
+			result.addChild(response);
+			info.addChild(processed);
+			
+			info.addChild(failed);
+			info.addChild(total);
+			info.addChild(secondsSpent);
+			result.addChild(info);
+
+			ZabbixUtils.preparePayload(messageContext, result);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
