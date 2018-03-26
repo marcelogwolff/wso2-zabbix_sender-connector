@@ -30,38 +30,6 @@ import org.wso2.carbon.connector.core.ConnectException;
  *
  */
 public class Send extends AbstractConnector{
-	
-	public static void main (String[] args){
-		//{"response":"success","info":
-			//"processed: 1; failed: 0; total: 1; seconds spent: 0.000093"
-		//}
-
-		String jsonString = "{\"response\":\"success\",\"info\":\"processed: 1; failed: 0; total: 1; seconds spent: 0.000093\"}";
-		String[] split = jsonString.replace("{", "").replace("}", "").replace(" ", "").split(",");
-		String[] zabbixResponse = split[0].split(":");
-		System.out.println(zabbixResponse[1]);
-		
-		
-		List<String> list = Arrays.asList(split[1].replace("\"info\":","").split(";"));
-		for(String element : list){
-			String[] elementArray = element.split(":");
-
-			switch(elementArray[0].replace("\"","")){
-				case ZabbixConstants.PROCESSED:
-					System.out.println(elementArray[1]);
-					break;
-				case ZabbixConstants.FAILED:
-					System.out.println(elementArray[1]);
-					break;
-				case ZabbixConstants.TOTAL:
-					System.out.println(elementArray[1]);
-					break;
-				case ZabbixConstants.SECONDSSPENT:
-					System.out.println(elementArray[1]);
-					break;
-			}
-		}
-	}
 
 	@Override
 	public void connect(MessageContext messageContext) throws ConnectException {

@@ -36,9 +36,6 @@ public class ZabbixConstants {
     public static final String SECONDSSPENT = "secondsspent";
     public static final String SECONDS_SPENT = "secondsSpent";
 
-
-
-
     public static final int ERROR_SEND = 100001;
 
 
